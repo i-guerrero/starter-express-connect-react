@@ -10,8 +10,6 @@ function Bookmarks() {
     axios
       .get(`${API}/bookmarks`)
       .then((response) => {
-        // console.log(response);
-        // console.log(response.data);
         setBookmarks(response.data);
       })
       .catch((e) => {
