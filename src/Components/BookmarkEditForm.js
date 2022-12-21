@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+const API = process.env.REACT_APP_API_URL;
 
 function BookmarkEditForm() {
   let { index } = useParams();
@@ -12,6 +14,8 @@ function BookmarkEditForm() {
     isFavorite: false,
   });
 
+  const navigate = useNavigate();
+
   const handleTextChange = (event) => {
     setBookmark({ ...bookmark, [event.target.id]: event.target.value });
   };
@@ -20,10 +24,30 @@ function BookmarkEditForm() {
     setBookmark({ ...bookmark, isFavorite: !bookmark.isFavorite });
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    axios
+      .get(`${API}/bookmarks/${index}`)
+      .then((response) => {
+        console.log(response.data);
+        setBookmark(response.data);
+      })
+      .catch((e) => console.error(e));
+  }, [index]);
+
+  const updateBookmark = () => {
+    axios
+      .put(`${API}/bookmarks/${index}`, bookmark)
+      .then((response) => {
+        console.log(response.data);
+        setBookmark(response.data); // why reset bookmark to what we get?
+        navigate(`/bookmarks/${index}`);
+      })
+      .catch((c) => console.warn("catch", c));
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    updateBookmark();
   };
   return (
     <div className="Edit">
